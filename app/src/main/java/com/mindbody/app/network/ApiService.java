@@ -16,49 +16,49 @@ import retrofit2.http.Query;
 public interface ApiService {
 
     // Auth
-    @POST("api/auth/register")
+    @POST("auth/register")
     Call<Map<String, Object>> register(@Body Map<String, Object> body);
 
-    @POST("api/auth/login")
+    @POST("auth/login")
     Call<Map<String, Object>> login(@Body Map<String, Object> body);
 
-    @GET("api/auth/profile")
+    @GET("auth/profile")
     Call<User> getProfile();
 
     // Checkin
-    @POST("api/checkin")
+    @POST("checkin")
     Call<Map<String, Object>> submitCheckin(@Body CheckinRequest request);
 
-    @GET("api/checkin/history")
+    @GET("checkin/history")
     Call<List<Map<String, Object>>> getCheckinHistory(@Query("days") int days);
 
-    @GET("api/checkin/streak")
+    @GET("checkin/streak")
     Call<Map<String, Object>> getStreak();
 
     // Questionnaire
-    @POST("api/questionnaire")
+    @POST("questionnaire")
     Call<Map<String, Object>> submitQuestionnaire(@Body Map<String, Object> body);
 
-    @GET("api/questionnaire/history")
+    @GET("questionnaire/history")
     Call<List<Map<String, Object>>> getQuestionnaireHistory();
 
-    @GET("api/questionnaire/latest")
+    @GET("questionnaire/latest")
     Call<Map<String, Object>> getLatestQuestionnaire();
 
     // AI
-    @GET("api/ai/latest")
+    @GET("ai/latest")
     Call<AiAnalysis> getLatestAi();
 
-    @GET("api/ai/analysis")
+    @GET("ai/analysis")
     Call<AiAnalysis> getAiAnalysis(@Query("date") String date);
 
     // Stats
-    @GET("api/stats/mood")
+    @GET("stats/mood")
     Call<List<Map<String, Object>>> getMoodStats(@Query("days") int days);
 
-    @GET("api/stats/symptoms")
+    @GET("stats/symptoms")
     Call<List<Map<String, Object>>> getSymptomStats(@Query("days") int days);
 
-    @GET("api/stats/correlation")
+    @GET("stats/correlation")
     Call<Map<String, Object>> getCorrelation();
 }

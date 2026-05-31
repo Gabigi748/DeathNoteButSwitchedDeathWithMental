@@ -11,7 +11,7 @@ import java.util.concurrent.TimeUnit;
 
 public class RetrofitClient {
 
-    private static final String BASE_URL = "http://10.0.2.2:3300/";
+    private static final String BASE_URL = "https://anzufish.org/mindbody-api/";
     private static RetrofitClient instance;
     private final ApiService apiService;
 
