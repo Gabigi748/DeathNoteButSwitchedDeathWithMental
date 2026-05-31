@@ -209,14 +209,91 @@ public class StatsFragment extends Fragment {
         apiService.getCorrelation().enqueue(new Callback<Map<String, Object>>() {
             @Override
             public void onResponse(Call<Map<String, Object>> call, Response<Map<String, Object>> response) {
-                if (response.isSuccessful() && response.body() != null) {
-                    Object summary = response.body().get("summary");
-                    if (summary != null) {
-                        tvCorrelation.setText(summary.toString());
-                    } else {
-                        tvCorrelation.setText("尚無足夠資料進行關聯分析");
+                if (!response.isSuccessful() || response.body() == null) {
+                    tvCorrelation.setText("尚無足夠資料進行關聯分析");
+                    return;
+                }
+                Map<String, Object> body = response.body();
+
+                // Summary
+                int totalDays = 0, lowMoodDays = 0;
+                Object sumObj = body.get("summary");
+                if (sumObj instanceof Map) {
+                    @SuppressWarnings("unchecked")
+                    Map<String, Object> summary = (Map<String, Object>) sumObj;
+                    Object total = summary.get("total_checkin_days");
+                    Object low = summary.get("low_mood_days");
+                    if (total instanceof Double) totalDays = ((Double) total).intValue();
+                    if (low instanceof Double) lowMoodDays = ((Double) low).intValue();
+                }
+
+                StringBuilder sb = new StringBuilder();
+                sb.append("📊 累計打卡 ").append(totalDays).append(" 天");
+                if (lowMoodDays > 0) {
+                    sb.append("（其中 ").append(lowMoodDays).append(" 天情緒低落）");
+                }
+                sb.append("\n\n");
+
+                if (totalDays < 3) {
+                    sb.append("💡 持續打卡幾天後，這裡會出現更個人化的身心關聯洞察。");
+                    tvCorrelation.setText(sb.toString());
+                    return;
+                }
+
+                // Low mood symptoms
+                Object lowObj = body.get("low_mood_symptoms");
+                if (lowObj instanceof List) {
+                    @SuppressWarnings("unchecked")
+                    List<Map<String, Object>> lowSymptoms = (List<Map<String, Object>>) lowObj;
+                    if (!lowSymptoms.isEmpty()) {
+                        sb.append("😔 情緒低落時最常見的症狀：\n");
+                        int shown = 0;
+                        for (Map<String, Object> s : lowSymptoms) {
+                            if (shown >= 3) break;
+                            Object name = s.get("symptom_name");
+                            Object pct = s.get("percentage");
+                            if (name != null) {
+                                sb.append("  • ").append(name);
+                                if (pct instanceof Double) {
+                                    sb.append("（").append(((Double) pct).intValue()).append("%）");
+                                }
+                                sb.append("\n");
+                                shown++;
+                            }
+                        }
+                        sb.append("\n");
                     }
                 }
+
+                // High mood symptoms
+                Object highObj = body.get("high_mood_symptoms");
+                if (highObj instanceof List) {
+                    @SuppressWarnings("unchecked")
+                    List<Map<String, Object>> highSymptoms = (List<Map<String, Object>>) highObj;
+                    if (!highSymptoms.isEmpty()) {
+                        sb.append("😊 情緒愉悅時記錄的症狀：\n");
+                        int shown = 0;
+                        for (Map<String, Object> s : highSymptoms) {
+                            if (shown >= 3) break;
+                            Object name = s.get("symptom_name");
+                            Object cnt = s.get("count");
+                            if (name != null) {
+                                sb.append("  • ").append(name);
+                                if (cnt instanceof Double) {
+                                    sb.append("（").append(((Double) cnt).intValue()).append(" 次）");
+                                }
+                                sb.append("\n");
+                                shown++;
+                            }
+                        }
+                    }
+                }
+
+                if (sb.toString().endsWith("\n\n")) {
+                    sb.append("尚未累積足夠的高低情緒症狀資料，繼續打卡會有更多洞察。");
+                }
+
+                tvCorrelation.setText(sb.toString());
             }
 
             @Override
