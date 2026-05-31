@@ -94,7 +94,8 @@ public class RegisterActivity extends AppCompatActivity {
         String email = etEmail.getText() != null ? etEmail.getText().toString().trim() : "";
         String password = etPassword.getText() != null ? etPassword.getText().toString().trim() : "";
         String nickname = etNickname.getText() != null ? etNickname.getText().toString().trim() : "";
-        String gender = spinnerGender.getSelectedItem().toString();
+        String[] genderKeys = {"male", "female", "other"};
+        String gender = genderKeys[spinnerGender.getSelectedItemPosition()];
 
         if (email.isEmpty() || password.isEmpty() || nickname.isEmpty()) {
             Toast.makeText(this, "請填寫所有必填欄位", Toast.LENGTH_SHORT).show();

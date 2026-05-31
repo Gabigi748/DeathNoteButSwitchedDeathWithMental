@@ -119,6 +119,22 @@ public class CheckinFragment extends Fragment {
         List<String> groups = new ArrayList<>(symptomData.keySet());
         symptomAdapter = new SymptomExpandableAdapter(requireContext(), groups, symptomData);
         elvSymptoms.setAdapter(symptomAdapter);
+
+        // Allow ExpandableListView to scroll inside NestedScrollView
+        elvSymptoms.setOnTouchListener((v, event) -> {
+            int action = event.getActionMasked();
+            switch (action) {
+                case android.view.MotionEvent.ACTION_DOWN:
+                    v.getParent().requestDisallowInterceptTouchEvent(true);
+                    break;
+                case android.view.MotionEvent.ACTION_UP:
+                case android.view.MotionEvent.ACTION_CANCEL:
+                    v.getParent().requestDisallowInterceptTouchEvent(false);
+                    break;
+            }
+            v.onTouchEvent(event);
+            return true;
+        });
     }
 
     private void setupDiary() {

@@ -54,10 +54,10 @@ public interface ApiService {
 
     // Stats
     @GET("stats/mood")
-    Call<List<Map<String, Object>>> getMoodStats(@Query("days") int days);
+    Call<Map<String, Object>> getMoodStats(@Query("days") int days);
 
     @GET("stats/symptoms")
-    Call<List<Map<String, Object>>> getSymptomStats(@Query("days") int days);
+    Call<Map<String, Object>> getSymptomStats(@Query("days") int days);
 
     @GET("stats/correlation")
     Call<Map<String, Object>> getCorrelation();

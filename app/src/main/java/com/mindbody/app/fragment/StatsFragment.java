@@ -97,11 +97,12 @@ public class StatsFragment extends Fragment {
     }
 
     private void loadMoodData(int days) {
-        apiService.getMoodStats(days).enqueue(new Callback<List<Map<String, Object>>>() {
+        apiService.getMoodStats(days).enqueue(new Callback<Map<String, Object>>() {
             @Override
-            public void onResponse(Call<List<Map<String, Object>>> call, Response<List<Map<String, Object>>> response) {
+            public void onResponse(Call<Map<String, Object>> call, Response<Map<String, Object>> response) {
                 if (response.isSuccessful() && response.body() != null) {
-                    List<Map<String, Object>> data = response.body();
+                    Object dataObj = response.body().get("data");
+                    List<Map<String, Object>> data = (dataObj instanceof List) ? (List<Map<String, Object>>) dataObj : new ArrayList<>();
                     List<Entry> entries = new ArrayList<>();
                     List<String> labels = new ArrayList<>();
 
@@ -150,7 +151,7 @@ public class StatsFragment extends Fragment {
             }
 
             @Override
-            public void onFailure(Call<List<Map<String, Object>>> call, Throwable t) {
+            public void onFailure(Call<Map<String, Object>> call, Throwable t) {
                 chartMood.setNoDataText("載入失敗");
                 chartMood.invalidate();
             }
@@ -158,11 +159,12 @@ public class StatsFragment extends Fragment {
     }
 
     private void loadSymptomData() {
-        apiService.getSymptomStats(30).enqueue(new Callback<List<Map<String, Object>>>() {
+        apiService.getSymptomStats(30).enqueue(new Callback<Map<String, Object>>() {
             @Override
-            public void onResponse(Call<List<Map<String, Object>>> call, Response<List<Map<String, Object>>> response) {
+            public void onResponse(Call<Map<String, Object>> call, Response<Map<String, Object>> response) {
                 if (response.isSuccessful() && response.body() != null) {
-                    List<Map<String, Object>> data = response.body();
+                    Object dataObj = response.body().get("data");
+                    List<Map<String, Object>> data = (dataObj instanceof List) ? (List<Map<String, Object>>) dataObj : new ArrayList<>();
                     List<PieEntry> entries = new ArrayList<>();
 
                     for (Map<String, Object> item : data) {
@@ -196,7 +198,7 @@ public class StatsFragment extends Fragment {
             }
 
             @Override
-            public void onFailure(Call<List<Map<String, Object>>> call, Throwable t) {
+            public void onFailure(Call<Map<String, Object>> call, Throwable t) {
                 chartSymptoms.setNoDataText("載入失敗");
                 chartSymptoms.invalidate();
             }
