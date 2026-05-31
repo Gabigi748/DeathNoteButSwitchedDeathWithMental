@@ -1,6 +1,5 @@
 package com.mindbody.app.network;
 
-import com.mindbody.app.model.AiAnalysis;
 import com.mindbody.app.model.CheckinRequest;
 import com.mindbody.app.model.User;
 
@@ -30,7 +29,7 @@ public interface ApiService {
     Call<Map<String, Object>> submitCheckin(@Body CheckinRequest request);
 
     @GET("checkin/history")
-    Call<List<Map<String, Object>>> getCheckinHistory(@Query("days") int days);
+    Call<Map<String, Object>> getCheckinHistory(@Query("days") int days);
 
     @GET("checkin/streak")
     Call<Map<String, Object>> getStreak();
@@ -47,10 +46,10 @@ public interface ApiService {
 
     // AI
     @GET("ai/latest")
-    Call<AiAnalysis> getLatestAi();
+    Call<Map<String, Object>> getLatestAi();
 
     @GET("ai/analysis")
-    Call<AiAnalysis> getAiAnalysis(@Query("date") String date);
+    Call<Map<String, Object>> getAiAnalysis(@Query("date") String date);
 
     // Stats
     @GET("stats/mood")

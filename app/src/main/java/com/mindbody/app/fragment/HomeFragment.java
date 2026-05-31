@@ -16,7 +16,6 @@ import com.google.android.material.button.MaterialButton;
 import com.mindbody.app.MainActivity;
 import com.mindbody.app.R;
 import com.mindbody.app.adapter.CalendarAdapter;
-import com.mindbody.app.model.AiAnalysis;
 import com.mindbody.app.network.ApiService;
 import com.mindbody.app.network.RetrofitClient;
 import com.mindbody.app.util.SharedPrefManager;
@@ -118,47 +117,60 @@ public class HomeFragment extends Fragment {
     }
 
     private void loadAiSuggestion() {
-        apiService.getLatestAi().enqueue(new Callback<AiAnalysis>() {
+        apiService.getLatestAi().enqueue(new Callback<Map<String, Object>>() {
             @Override
-            public void onResponse(Call<AiAnalysis> call, Response<AiAnalysis> response) {
+            public void onResponse(Call<Map<String, Object>> call, Response<Map<String, Object>> response) {
                 if (response.isSuccessful() && response.body() != null) {
-                    String aiText = response.body().getAiResponse();
-                    if (aiText != null && !aiText.isEmpty()) {
-                        tvAiSuggestion.setText(aiText);
+                    Object analysisObj = response.body().get("analysis");
+                    if (analysisObj instanceof Map) {
+                        @SuppressWarnings("unchecked")
+                        Map<String, Object> analysis = (Map<String, Object>) analysisObj;
+                        Object aiTextObj = analysis.get("ai_response");
+                        if (aiTextObj != null && !aiTextObj.toString().isEmpty()) {
+                            tvAiSuggestion.setText(aiTextObj.toString());
+                        }
                     }
                 }
             }
 
             @Override
-            public void onFailure(Call<AiAnalysis> call, Throwable t) {
+            public void onFailure(Call<Map<String, Object>> call, Throwable t) {
                 // Keep default text
             }
         });
     }
 
     private void loadCheckinHistory() {
-        apiService.getCheckinHistory(30).enqueue(new Callback<List<Map<String, Object>>>() {
+        apiService.getCheckinHistory(30).enqueue(new Callback<Map<String, Object>>() {
             @Override
-            public void onResponse(Call<List<Map<String, Object>>> call, Response<List<Map<String, Object>>> response) {
+            public void onResponse(Call<Map<String, Object>> call, Response<Map<String, Object>> response) {
                 Set<Integer> checkedDays = new HashSet<>();
                 if (response.isSuccessful() && response.body() != null) {
-                    for (Map<String, Object> item : response.body()) {
-                        Object dateObj = item.get("date");
-                        if (dateObj != null) {
-                            String dateStr = dateObj.toString();
-                            // Extract day from date string (YYYY-MM-DD)
-                            try {
-                                String[] parts = dateStr.split("-");
-                                if (parts.length == 3) {
-                                    int day = Integer.parseInt(parts[2]);
-                                    int month = Integer.parseInt(parts[1]);
-                                    int currentMonth = Calendar.getInstance().get(Calendar.MONTH) + 1;
-                                    if (month == currentMonth) {
-                                        checkedDays.add(day);
+                    Object listObj = response.body().get("checkins");
+                    if (listObj instanceof List) {
+                        @SuppressWarnings("unchecked")
+                        List<Map<String, Object>> checkins = (List<Map<String, Object>>) listObj;
+                        for (Map<String, Object> item : checkins) {
+                            Object dateObj = item.get("checkin_date");
+                            if (dateObj != null) {
+                                String dateStr = dateObj.toString();
+                                // Handle ISO format "2026-06-01T00:00:00.000Z" and "2026-06-01"
+                                try {
+                                    if (dateStr.length() >= 10) {
+                                        String ymd = dateStr.substring(0, 10);
+                                        String[] parts = ymd.split("-");
+                                        if (parts.length == 3) {
+                                            int day = Integer.parseInt(parts[2]);
+                                            int month = Integer.parseInt(parts[1]);
+                                            int currentMonth = Calendar.getInstance().get(Calendar.MONTH) + 1;
+                                            if (month == currentMonth) {
+                                                checkedDays.add(day);
+                                            }
+                                        }
                                     }
+                                } catch (NumberFormatException e) {
+                                    // Skip invalid dates
                                 }
-                            } catch (NumberFormatException e) {
-                                // Skip invalid dates
                             }
                         }
                     }
@@ -167,7 +179,7 @@ public class HomeFragment extends Fragment {
             }
 
             @Override
-            public void onFailure(Call<List<Map<String, Object>>> call, Throwable t) {
+            public void onFailure(Call<Map<String, Object>> call, Throwable t) {
                 updateCalendar(new HashSet<>());
             }
         });
