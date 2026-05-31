@@ -2,13 +2,9 @@ package com.mindbody.app.fragment;
 
 import android.graphics.Color;
 import android.os.Bundle;
-import android.print.PrintAttributes;
-import android.print.PrintManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.webkit.WebView;
-import android.webkit.WebViewClient;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -32,6 +28,21 @@ import com.mindbody.app.R;
 import com.mindbody.app.network.ApiService;
 import com.mindbody.app.network.RetrofitClient;
 
+import android.content.ContentValues;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.Paint;
+import android.graphics.pdf.PdfDocument;
+import android.net.Uri;
+import android.os.Build;
+import android.os.Environment;
+import android.provider.MediaStore;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.OutputStream;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -306,40 +317,118 @@ public class StatsFragment extends Fragment {
     private void exportPdf() {
         if (getActivity() == null) return;
 
-        WebView webView = new WebView(requireContext());
-        webView.setWebViewClient(new WebViewClient() {
-            @Override
-            public void onPageFinished(WebView view, String url) {
-                createPdf(view);
+        try {
+            PdfDocument pdf = new PdfDocument();
+            int pageWidth = 595;   // A4 in points
+            int pageHeight = 842;
+            PdfDocument.PageInfo pageInfo = new PdfDocument.PageInfo.Builder(pageWidth, pageHeight, 1).create();
+            PdfDocument.Page page = pdf.startPage(pageInfo);
+            Canvas canvas = page.getCanvas();
+
+            Paint titlePaint = new Paint();
+            titlePaint.setColor(android.graphics.Color.parseColor("#4CAF50"));
+            titlePaint.setTextSize(24f);
+            titlePaint.setFakeBoldText(true);
+
+            Paint headerPaint = new Paint();
+            headerPaint.setColor(android.graphics.Color.parseColor("#333333"));
+            headerPaint.setTextSize(16f);
+            headerPaint.setFakeBoldText(true);
+
+            Paint textPaint = new Paint();
+            textPaint.setColor(android.graphics.Color.BLACK);
+            textPaint.setTextSize(13f);
+
+            Paint smallPaint = new Paint();
+            smallPaint.setColor(android.graphics.Color.GRAY);
+            smallPaint.setTextSize(11f);
+
+            int x = 40;
+            int y = 60;
+            canvas.drawText("身心健康報表", x, y, titlePaint);
+            y += 25;
+            String today = new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault()).format(new Date());
+            canvas.drawText("產出時間：" + today, x, y, smallPaint);
+            y += 35;
+
+            // 心情趨勢圖
+            canvas.drawText("情緒趨勢", x, y, headerPaint);
+            y += 10;
+            try {
+                Bitmap moodBmp = chartMood.getChartBitmap();
+                if (moodBmp != null) {
+                    int targetW = pageWidth - 80;
+                    int targetH = (int) ((float) moodBmp.getHeight() / moodBmp.getWidth() * targetW);
+                    if (targetH > 250) targetH = 250;
+                    Bitmap scaled = Bitmap.createScaledBitmap(moodBmp, targetW, targetH, true);
+                    canvas.drawBitmap(scaled, x, y, null);
+                    y += targetH + 20;
+                }
+            } catch (Exception ignored) {}
+
+            // 症狀分佈圖
+            canvas.drawText("症狀分佈", x, y, headerPaint);
+            y += 10;
+            try {
+                Bitmap symBmp = chartSymptoms.getChartBitmap();
+                if (symBmp != null) {
+                    int targetW = pageWidth - 80;
+                    int targetH = (int) ((float) symBmp.getHeight() / symBmp.getWidth() * targetW);
+                    if (targetH > 250) targetH = 250;
+                    Bitmap scaled = Bitmap.createScaledBitmap(symBmp, targetW, targetH, true);
+                    canvas.drawBitmap(scaled, x, y, null);
+                    y += targetH + 20;
+                }
+            } catch (Exception ignored) {}
+
+            // 關聯分析
+            canvas.drawText("身心關聯分析", x, y, headerPaint);
+            y += 22;
+            String correlation = tvCorrelation.getText().toString();
+            for (String line : correlation.split("\\n")) {
+                if (y > pageHeight - 50) break;
+                canvas.drawText(line, x, y, textPaint);
+                y += 18;
             }
-        });
 
-        // Build HTML report
-        String html = "<html><head><meta charset='utf-8'><style>"
-                + "body{font-family:sans-serif;padding:20px;}"
-                + "h1{color:#4CAF50;}"
-                + "h2{color:#333;margin-top:20px;}"
-                + "</style></head><body>"
-                + "<h1>身心健康報表</h1>"
-                + "<h2>身心關聯分析</h2>"
-                + "<p>" + tvCorrelation.getText().toString() + "</p>"
-                + "</body></html>";
+            pdf.finishPage(page);
 
-        webView.loadDataWithBaseURL(null, html, "text/html", "UTF-8", null);
-    }
+            // 寫入下載資料夾
+            String fileName = "MindBody_" + new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(new Date()) + ".pdf";
+            String savedPath;
 
-    private void createPdf(WebView webView) {
-        if (getActivity() == null) return;
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                ContentValues values = new ContentValues();
+                values.put(MediaStore.MediaColumns.DISPLAY_NAME, fileName);
+                values.put(MediaStore.MediaColumns.MIME_TYPE, "application/pdf");
+                values.put(MediaStore.MediaColumns.RELATIVE_PATH, Environment.DIRECTORY_DOWNLOADS);
+                Uri uri = requireContext().getContentResolver().insert(MediaStore.Files.getContentUri("external"), values);
+                if (uri == null) {
+                    Toast.makeText(requireContext(), "建立檔案失敗", Toast.LENGTH_SHORT).show();
+                    pdf.close();
+                    return;
+                }
+                OutputStream out = requireContext().getContentResolver().openOutputStream(uri);
+                if (out != null) {
+                    pdf.writeTo(out);
+                    out.close();
+                }
+                savedPath = "下載/" + fileName;
+            } else {
+                File dir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
+                if (!dir.exists()) dir.mkdirs();
+                File file = new File(dir, fileName);
+                FileOutputStream fos = new FileOutputStream(file);
+                pdf.writeTo(fos);
+                fos.close();
+                savedPath = file.getAbsolutePath();
+            }
 
-        PrintManager printManager = (PrintManager) requireActivity().getSystemService(android.content.Context.PRINT_SERVICE);
-        if (printManager != null) {
-            String jobName = "身心健康報表";
-            PrintAttributes attributes = new PrintAttributes.Builder()
-                    .setMediaSize(PrintAttributes.MediaSize.ISO_A4)
-                    .build();
-            printManager.print(jobName, webView.createPrintDocumentAdapter(jobName), attributes);
-        } else {
-            Toast.makeText(requireContext(), "無法匯出 PDF", Toast.LENGTH_SHORT).show();
+            pdf.close();
+            Toast.makeText(requireContext(), "PDF 已儲存到：" + savedPath, Toast.LENGTH_LONG).show();
+        } catch (Exception e) {
+            Toast.makeText(requireContext(), "匯出失敗：" + e.getMessage(), Toast.LENGTH_LONG).show();
+            e.printStackTrace();
         }
     }
 }
