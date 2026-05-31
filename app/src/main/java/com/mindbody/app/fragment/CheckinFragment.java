@@ -186,7 +186,17 @@ public class CheckinFragment extends Fragment {
                     showAiResult(response.body());
                     resetForm();
                 } else {
-                    Toast.makeText(requireContext(), "打卡失敗，請稍後再試", Toast.LENGTH_SHORT).show();
+                    String errorMsg = "打卡失敗，請稍後再試";
+                    if (response.code() == 409) {
+                        errorMsg = "今天已經打卡過了，明天再來吧～";
+                    } else if (response.errorBody() != null) {
+                        try {
+                            String errStr = response.errorBody().string();
+                            org.json.JSONObject errJson = new org.json.JSONObject(errStr);
+                            if (errJson.has("error")) errorMsg = errJson.getString("error");
+                        } catch (Exception ignored) {}
+                    }
+                    Toast.makeText(requireContext(), errorMsg, Toast.LENGTH_LONG).show();
                 }
             }
 
@@ -200,8 +210,9 @@ public class CheckinFragment extends Fragment {
 
     private void showAiResult(Map<String, Object> responseBody) {
         String aiText = "";
-        if (responseBody != null && responseBody.containsKey("ai_response")) {
-            aiText = (String) responseBody.get("ai_response");
+        if (responseBody != null && responseBody.containsKey("ai_feedback")) {
+            Object f = responseBody.get("ai_feedback");
+            if (f != null) aiText = f.toString();
         }
 
         if (aiText == null || aiText.isEmpty()) {

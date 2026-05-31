@@ -104,7 +104,15 @@ public class LoginActivity extends AppCompatActivity {
                     startActivity(new Intent(LoginActivity.this, MainActivity.class));
                     finish();
                 } else {
-                    Toast.makeText(LoginActivity.this, R.string.error_login, Toast.LENGTH_SHORT).show();
+                    String errorMsg = getString(R.string.error_login);
+                    if (response.errorBody() != null) {
+                        try {
+                            String errStr = response.errorBody().string();
+                            org.json.JSONObject errJson = new org.json.JSONObject(errStr);
+                            if (errJson.has("error")) errorMsg = errJson.getString("error");
+                        } catch (Exception ignored) {}
+                    }
+                    Toast.makeText(LoginActivity.this, errorMsg, Toast.LENGTH_LONG).show();
                 }
             }
 

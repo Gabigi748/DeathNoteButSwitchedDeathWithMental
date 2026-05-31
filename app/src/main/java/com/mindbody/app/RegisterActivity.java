@@ -142,7 +142,15 @@ public class RegisterActivity extends AppCompatActivity {
                     startActivity(new Intent(RegisterActivity.this, LoginActivity.class));
                     finish();
                 } else {
-                    Toast.makeText(RegisterActivity.this, R.string.error_register, Toast.LENGTH_SHORT).show();
+                    String errorMsg = getString(R.string.error_register);
+                    if (response.errorBody() != null) {
+                        try {
+                            String errStr = response.errorBody().string();
+                            org.json.JSONObject errJson = new org.json.JSONObject(errStr);
+                            if (errJson.has("error")) errorMsg = errJson.getString("error");
+                        } catch (Exception ignored) {}
+                    }
+                    Toast.makeText(RegisterActivity.this, errorMsg, Toast.LENGTH_LONG).show();
                 }
             }
 
