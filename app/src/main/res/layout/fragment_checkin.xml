@@ -1,0 +1,245 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/grey_light">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <!-- Warning Banner -->
+        <LinearLayout
+            android:id="@+id/layout_warning"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/banner_warning"
+            android:padding="12dp"
+            android:visibility="gone"
+            android:layout_marginBottom="12dp">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/severe_warning"
+                android:textColor="@color/error"
+                android:textSize="13sp" />
+        </LinearLayout>
+
+        <!-- Mood Selection -->
+        <androidx.cardview.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:cardCornerRadius="16dp"
+            app:cardElevation="4dp"
+            app:cardBackgroundColor="@color/white"
+            android:layout_marginBottom="12dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/mood_title"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/text_primary" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:gravity="center"
+                    android:orientation="horizontal">
+
+                    <ImageButton
+                        android:id="@+id/btn_mood_1"
+                        android:layout_width="56dp"
+                        android:layout_height="56dp"
+                        android:layout_margin="4dp"
+                        android:background="@drawable/bg_mood_normal"
+                        android:contentDescription="很差"
+                        android:scaleType="centerInside"
+                        android:src="@android:drawable/ic_delete"
+                        android:padding="12dp" />
+
+                    <ImageButton
+                        android:id="@+id/btn_mood_2"
+                        android:layout_width="56dp"
+                        android:layout_height="56dp"
+                        android:layout_margin="4dp"
+                        android:background="@drawable/bg_mood_normal"
+                        android:contentDescription="不好"
+                        android:scaleType="centerInside"
+                        android:src="@android:drawable/ic_delete"
+                        android:padding="12dp" />
+
+                    <ImageButton
+                        android:id="@+id/btn_mood_3"
+                        android:layout_width="56dp"
+                        android:layout_height="56dp"
+                        android:layout_margin="4dp"
+                        android:background="@drawable/bg_mood_normal"
+                        android:contentDescription="普通"
+                        android:scaleType="centerInside"
+                        android:src="@android:drawable/ic_delete"
+                        android:padding="12dp" />
+
+                    <ImageButton
+                        android:id="@+id/btn_mood_4"
+                        android:layout_width="56dp"
+                        android:layout_height="56dp"
+                        android:layout_margin="4dp"
+                        android:background="@drawable/bg_mood_normal"
+                        android:contentDescription="不錯"
+                        android:scaleType="centerInside"
+                        android:src="@android:drawable/ic_delete"
+                        android:padding="12dp" />
+
+                    <ImageButton
+                        android:id="@+id/btn_mood_5"
+                        android:layout_width="56dp"
+                        android:layout_height="56dp"
+                        android:layout_margin="4dp"
+                        android:background="@drawable/bg_mood_normal"
+                        android:contentDescription="很好"
+                        android:scaleType="centerInside"
+                        android:src="@android:drawable/ic_delete"
+                        android:padding="12dp" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:gravity="center"
+                    android:orientation="horizontal">
+
+                    <TextView android:layout_width="56dp" android:layout_height="wrap_content"
+                        android:layout_margin="4dp" android:gravity="center"
+                        android:text="😢" android:textSize="24sp" />
+                    <TextView android:layout_width="56dp" android:layout_height="wrap_content"
+                        android:layout_margin="4dp" android:gravity="center"
+                        android:text="😟" android:textSize="24sp" />
+                    <TextView android:layout_width="56dp" android:layout_height="wrap_content"
+                        android:layout_margin="4dp" android:gravity="center"
+                        android:text="😐" android:textSize="24sp" />
+                    <TextView android:layout_width="56dp" android:layout_height="wrap_content"
+                        android:layout_margin="4dp" android:gravity="center"
+                        android:text="🙂" android:textSize="24sp" />
+                    <TextView android:layout_width="56dp" android:layout_height="wrap_content"
+                        android:layout_margin="4dp" android:gravity="center"
+                        android:text="😄" android:textSize="24sp" />
+                </LinearLayout>
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
+
+        <!-- Symptoms -->
+        <androidx.cardview.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:cardCornerRadius="16dp"
+            app:cardElevation="4dp"
+            app:cardBackgroundColor="@color/white"
+            android:layout_marginBottom="12dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/symptoms_title"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/text_primary" />
+
+                <ExpandableListView
+                    android:id="@+id/elv_symptoms"
+                    android:layout_width="match_parent"
+                    android:layout_height="300dp"
+                    android:layout_marginTop="8dp"
+                    android:divider="@android:color/transparent"
+                    android:dividerHeight="0dp"
+                    android:groupIndicator="@null" />
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
+
+        <!-- Diary -->
+        <androidx.cardview.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:cardCornerRadius="16dp"
+            app:cardElevation="4dp"
+            app:cardBackgroundColor="@color/white"
+            android:layout_marginBottom="12dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/diary_title"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/text_primary" />
+
+                <EditText
+                    android:id="@+id/et_diary"
+                    android:layout_width="match_parent"
+                    android:layout_height="120dp"
+                    android:layout_marginTop="8dp"
+                    android:background="@android:drawable/editbox_background"
+                    android:gravity="top|start"
+                    android:hint="@string/diary_hint"
+                    android:inputType="textMultiLine"
+                    android:maxLength="500"
+                    android:padding="12dp"
+                    android:textSize="14sp"
+                    android:importantForAutofill="no" />
+
+                <TextView
+                    android:id="@+id/tv_word_count"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="end"
+                    android:layout_marginTop="4dp"
+                    android:text="0/500"
+                    android:textColor="@color/text_secondary"
+                    android:textSize="12sp" />
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
+
+        <!-- Submit Button -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_submit_checkin"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:text="@string/btn_submit_checkin"
+            android:textSize="16sp"
+            app:cornerRadius="12dp" />
+
+        <ProgressBar
+            android:id="@+id/progress_bar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="16dp"
+            android:visibility="gone" />
+
+    </LinearLayout>
+</ScrollView>

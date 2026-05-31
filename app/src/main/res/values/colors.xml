@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="primary">#4CAF50</color>
+    <color name="primary_dark">#388E3C</color>
+    <color name="primary_light">#C8E6C9</color>
+    <color name="secondary">#FF9800</color>
+    <color name="secondary_dark">#F57C00</color>
+    <color name="secondary_light">#FFE0B2</color>
+    <color name="white">#FFFFFF</color>
+    <color name="black">#000000</color>
+    <color name="grey_light">#F5F5F5</color>
+    <color name="grey_medium">#9E9E9E</color>
+    <color name="grey_dark">#616161</color>
+    <color name="text_primary">#212121</color>
+    <color name="text_secondary">#757575</color>
+    <color name="error">#F44336</color>
+    <color name="success">#4CAF50</color>
+    <color name="warning">#FF9800</color>
+    <color name="calendar_checked">#4CAF50</color>
+    <color name="calendar_unchecked">#E0E0E0</color>
+    <color name="mood_1">#F44336</color>
+    <color name="mood_2">#FF9800</color>
+    <color name="mood_3">#FFEB3B</color>
+    <color name="mood_4">#8BC34A</color>
+    <color name="mood_5">#4CAF50</color>
+    <color name="banner_warning">#FFCDD2</color>
+</resources>
