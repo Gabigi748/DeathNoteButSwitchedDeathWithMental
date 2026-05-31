@@ -110,6 +110,7 @@ public class SymptomExpandableAdapter extends BaseExpandableListAdapter {
             String[] severities = {context.getString(R.string.severity_mild),
                     context.getString(R.string.severity_moderate),
                     context.getString(R.string.severity_severe)};
+            String[] severityKeys = {"mild", "moderate", "severe"};
             ArrayAdapter<String> adapter = new ArrayAdapter<>(context, android.R.layout.simple_spinner_dropdown_item, severities);
             spinner.setAdapter(adapter);
             spinner.setVisibility(View.GONE);
@@ -138,7 +139,7 @@ public class SymptomExpandableAdapter extends BaseExpandableListAdapter {
             checkedState.put(key, isChecked);
             spinner.setVisibility(isChecked ? View.VISIBLE : View.GONE);
             if (isChecked) {
-                selectedSymptoms.put(key, context.getString(R.string.severity_mild));
+                selectedSymptoms.put(key, "mild");
             } else {
                 selectedSymptoms.remove(key);
             }
@@ -148,10 +149,8 @@ public class SymptomExpandableAdapter extends BaseExpandableListAdapter {
             @Override
             public void onItemSelected(android.widget.AdapterView<?> adapterView, View view, int position, long id) {
                 if (Boolean.TRUE.equals(checkedState.get(key))) {
-                    String[] severities = {context.getString(R.string.severity_mild),
-                            context.getString(R.string.severity_moderate),
-                            context.getString(R.string.severity_severe)};
-                    selectedSymptoms.put(key, severities[position]);
+                    String[] severityKeys = {"mild", "moderate", "severe"};
+                    selectedSymptoms.put(key, severityKeys[position]);
                 }
             }
 

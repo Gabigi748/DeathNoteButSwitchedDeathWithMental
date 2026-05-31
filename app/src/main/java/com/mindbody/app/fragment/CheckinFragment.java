@@ -148,7 +148,7 @@ public class CheckinFragment extends Fragment {
         // Check for severe symptoms
         boolean hasSevere = false;
         for (Symptom s : symptoms) {
-            if ("重度".equals(s.getSeverity())) {
+            if ("severe".equals(s.getSeverity())) {
                 hasSevere = true;
                 break;
             }
