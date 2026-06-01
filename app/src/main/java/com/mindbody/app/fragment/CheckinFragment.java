@@ -42,7 +42,7 @@ public class CheckinFragment extends Fragment {
 
     private ImageButton btnMood1, btnMood2, btnMood3, btnMood4, btnMood5;
     private ExpandableListView elvSymptoms;
-    private EditText etDiary;
+    private EditText etDiary, etCustomSymptom;
     private TextView tvWordCount;
     private MaterialButton btnSubmit;
     private ProgressBar progressBar;
@@ -74,6 +74,7 @@ public class CheckinFragment extends Fragment {
         btnMood5 = view.findViewById(R.id.btn_mood_5);
         elvSymptoms = view.findViewById(R.id.elv_symptoms);
         etDiary = view.findViewById(R.id.et_diary);
+        etCustomSymptom = view.findViewById(R.id.et_custom_symptom);
         tvWordCount = view.findViewById(R.id.tv_word_count);
         btnSubmit = view.findViewById(R.id.btn_submit_checkin);
         progressBar = view.findViewById(R.id.progress_bar);
@@ -161,6 +162,16 @@ public class CheckinFragment extends Fragment {
         String diary = etDiary.getText().toString().trim();
         List<Symptom> symptoms = symptomAdapter.getSelectedSymptoms();
 
+        // 加入自訂症狀
+        String customSymptom = etCustomSymptom.getText().toString().trim();
+        if (!customSymptom.isEmpty()) {
+            Symptom custom = new Symptom();
+            custom.setSymptomName(customSymptom);
+            custom.setSeverity("mild");
+            custom.setCustom(true);
+            symptoms.add(custom);
+        }
+
         // Check for severe symptoms
         boolean hasSevere = false;
         for (Symptom s : symptoms) {
@@ -238,6 +249,7 @@ public class CheckinFragment extends Fragment {
             btn.setBackgroundResource(R.drawable.bg_mood_normal);
         }
         etDiary.setText("");
+        etCustomSymptom.setText("");
         layoutWarning.setVisibility(View.GONE);
         symptomAdapter.clearSelections();
     }

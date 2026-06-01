@@ -30,7 +30,7 @@ import retrofit2.Response;
 
 public class RegisterActivity extends AppCompatActivity {
 
-    private TextInputEditText etEmail, etPassword, etNickname;
+    private TextInputEditText etEmail, etPassword, etNickname, etOtherDisease;
     private Spinner spinnerGender;
     private MaterialButton btnBirthday, btnRegister;
     private CheckBox cbHypertension, cbDiabetes, cbHeart, cbAsthma;
@@ -64,6 +64,13 @@ public class RegisterActivity extends AppCompatActivity {
         cbAnxiety = findViewById(R.id.cb_anxiety);
         cbInsomnia = findViewById(R.id.cb_insomnia);
         cbOtherDisease = findViewById(R.id.cb_other_disease);
+        etOtherDisease = findViewById(R.id.et_other_disease);
+
+        // 其他慢性病 checkbox 控制 EditText 顯示
+        cbOtherDisease.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            etOtherDisease.setVisibility(isChecked ? View.VISIBLE : View.GONE);
+            if (!isChecked) etOtherDisease.setText("");
+        });
 
         // Setup gender spinner
         String[] genders = {getString(R.string.gender_male), getString(R.string.gender_female), getString(R.string.gender_other)};
@@ -121,7 +128,14 @@ public class RegisterActivity extends AppCompatActivity {
         if (cbDepression.isChecked()) diseases.add("憂鬱症");
         if (cbAnxiety.isChecked()) diseases.add("焦慮症");
         if (cbInsomnia.isChecked()) diseases.add("失眠");
-        if (cbOtherDisease.isChecked()) diseases.add("其他");
+        if (cbOtherDisease.isChecked()) {
+            String otherText = etOtherDisease.getText().toString().trim();
+            if (!otherText.isEmpty()) {
+                diseases.add("其他:" + otherText);
+            } else {
+                diseases.add("其他");
+            }
+        }
 
         setLoading(true);
 

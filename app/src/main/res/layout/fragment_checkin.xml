@@ -67,7 +67,7 @@
                         android:background="@drawable/bg_mood_normal"
                         android:contentDescription="很差"
                         android:scaleType="centerInside"
-                        android:src="@android:drawable/ic_delete"
+                        android:src="@android:drawable/checkbox_on_background"
                         android:padding="12dp" />
 
                     <ImageButton
@@ -78,7 +78,7 @@
                         android:background="@drawable/bg_mood_normal"
                         android:contentDescription="不好"
                         android:scaleType="centerInside"
-                        android:src="@android:drawable/ic_delete"
+                        android:src="@android:drawable/checkbox_on_background"
                         android:padding="12dp" />
 
                     <ImageButton
@@ -89,7 +89,7 @@
                         android:background="@drawable/bg_mood_normal"
                         android:contentDescription="普通"
                         android:scaleType="centerInside"
-                        android:src="@android:drawable/ic_delete"
+                        android:src="@android:drawable/checkbox_on_background"
                         android:padding="12dp" />
 
                     <ImageButton
@@ -100,7 +100,7 @@
                         android:background="@drawable/bg_mood_normal"
                         android:contentDescription="不錯"
                         android:scaleType="centerInside"
-                        android:src="@android:drawable/ic_delete"
+                        android:src="@android:drawable/checkbox_on_background"
                         android:padding="12dp" />
 
                     <ImageButton
@@ -111,7 +111,7 @@
                         android:background="@drawable/bg_mood_normal"
                         android:contentDescription="很好"
                         android:scaleType="centerInside"
-                        android:src="@android:drawable/ic_delete"
+                        android:src="@android:drawable/checkbox_on_background"
                         android:padding="12dp" />
                 </LinearLayout>
 
@@ -172,6 +172,14 @@
                     android:divider="@android:color/transparent"
                     android:dividerHeight="0dp"
                     android:groupIndicator="@null" />
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/et_custom_symptom"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:hint="自訂症狀（選填）"
+                    android:inputType="text" />
             </LinearLayout>
         </androidx.cardview.widget.CardView>
 
