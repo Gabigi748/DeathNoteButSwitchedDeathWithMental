@@ -12,10 +12,17 @@ public class Symptom {
     @SerializedName("severity")
     private String severity;
 
+    @SerializedName("is_custom")
+    private boolean isCustom;
+
+    public Symptom() {
+    }
+
     public Symptom(String bodyPart, String symptomName, String severity) {
         this.bodyPart = bodyPart;
         this.symptomName = symptomName;
         this.severity = severity;
+        this.isCustom = false;
     }
 
     public String getBodyPart() { return bodyPart; }
@@ -26,4 +33,7 @@ public class Symptom {
 
     public String getSeverity() { return severity; }
     public void setSeverity(String severity) { this.severity = severity; }
+
+    public boolean isCustom() { return isCustom; }
+    public void setCustom(boolean custom) { isCustom = custom; }
 }
