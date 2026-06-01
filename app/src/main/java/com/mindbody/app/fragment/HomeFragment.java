@@ -1,5 +1,7 @@
 package com.mindbody.app.fragment;
 
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -8,12 +10,14 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.cardview.widget.CardView;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.button.MaterialButton;
 import com.mindbody.app.MainActivity;
+import com.mindbody.app.QuestionnaireActivity;
 import com.mindbody.app.R;
 import com.mindbody.app.adapter.CalendarAdapter;
 import com.mindbody.app.network.ApiService;
@@ -64,12 +68,93 @@ public class HomeFragment extends Fragment {
         loadStreak();
         loadAiSuggestion();
         loadCheckinHistory();
+        checkQuestionnaireReminder(view);
 
         btnStartCheckin.setOnClickListener(v -> {
             if (getActivity() instanceof MainActivity) {
                 ((MainActivity) getActivity()).navigateToCheckin();
             }
         });
+    }
+
+    /**
+     * 14 天沒填問卷或從未填過 → 顯示首頁提醒卡片
+     */
+    private void checkQuestionnaireReminder(View root) {
+        final CardView card = root.findViewById(R.id.card_questionnaire_reminder);
+        final TextView tvText = root.findViewById(R.id.tv_reminder_text);
+        final MaterialButton btnGo = root.findViewById(R.id.btn_reminder_go);
+        final MaterialButton btnDismiss = root.findViewById(R.id.btn_reminder_dismiss);
+        if (card == null) return;
+
+        // 1 天內按過「稍後再說」就不再彈
+        SharedPreferences prefs = requireContext().getSharedPreferences("mindbody_reminder", 0);
+        long dismissedAt = prefs.getLong("home_dismissed_at", 0L);
+        if (System.currentTimeMillis() - dismissedAt < 24L * 3600L * 1000L) {
+            card.setVisibility(View.GONE);
+            return;
+        }
+
+        apiService.getLatestQuestionnaire().enqueue(new Callback<Map<String, Object>>() {
+            @Override
+            public void onResponse(Call<Map<String, Object>> call, Response<Map<String, Object>> response) {
+                if (!response.isSuccessful() || response.body() == null) return;
+                Object q = response.body().get("questionnaire");
+
+                boolean show;
+                String text;
+                if (q == null) {
+                    show = true;
+                    text = "你還沒填過 PHQ-9 / GAD-7 量表，花 3 分鐘檢視一下身心狀態吧";
+                } else if (q instanceof Map) {
+                    Map<?, ?> qm = (Map<?, ?>) q;
+                    Object createdAt = qm.get("created_at");
+                    long days = createdAt != null ? daysSince(createdAt.toString()) : 0;
+                    if (days >= 14) {
+                        show = true;
+                        text = String.format("距離上次填問卷已過 %d 天，建議再評估一次", days);
+                    } else {
+                        show = false;
+                        text = "";
+                    }
+                } else {
+                    show = false;
+                    text = "";
+                }
+
+                if (show) {
+                    tvText.setText(text);
+                    card.setVisibility(View.VISIBLE);
+                } else {
+                    card.setVisibility(View.GONE);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Map<String, Object>> call, Throwable t) {
+                card.setVisibility(View.GONE);
+            }
+        });
+
+        btnGo.setOnClickListener(v -> {
+            startActivity(new Intent(requireContext(), QuestionnaireActivity.class));
+            card.setVisibility(View.GONE);
+        });
+        btnDismiss.setOnClickListener(v -> {
+            prefs.edit().putLong("home_dismissed_at", System.currentTimeMillis()).apply();
+            card.setVisibility(View.GONE);
+        });
+    }
+
+    private long daysSince(String iso) {
+        try {
+            String norm = iso.replace(" ", "T");
+            if (!norm.endsWith("Z") && !norm.contains("+")) norm += "Z";
+            long t = java.time.Instant.parse(norm).toEpochMilli();
+            return (System.currentTimeMillis() - t) / (24L * 3600L * 1000L);
+        } catch (Exception e) {
+            return 0;
+        }
     }
 
     private void setupGreeting() {

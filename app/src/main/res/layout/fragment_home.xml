@@ -44,6 +44,66 @@
             </LinearLayout>
         </androidx.cardview.widget.CardView>
 
+        <!-- Questionnaire Reminder Card (顯示時機：超過 14 天沒填) -->
+        <androidx.cardview.widget.CardView
+            android:id="@+id/card_questionnaire_reminder"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            app:cardCornerRadius="16dp"
+            app:cardElevation="4dp"
+            app:cardBackgroundColor="#FFF4E5"
+            android:layout_marginBottom="12dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="20dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="📝 該做身心評估了"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:textColor="#B26B00" />
+
+                <TextView
+                    android:id="@+id/tv_reminder_text"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp"
+                    android:textSize="14sp"
+                    android:textColor="#5C4400" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginTop="12dp"
+                    android:gravity="end">
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btn_reminder_dismiss"
+                        style="@style/Widget.Material3.Button.TextButton"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="稍後再說"
+                        android:textColor="#8A6D00" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btn_reminder_go"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:text="現在去填"
+                        app:backgroundTint="#FF8C00"
+                        android:textColor="@color/white" />
+                </LinearLayout>
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
+
         <!-- Calendar Card -->
         <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
